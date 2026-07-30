@@ -16,6 +16,7 @@ export default function Servicos() {
   const { showToast, ToastEl } = useToast();
 
   const [loading, setLoading] = useState(true);
+  const [disabledError, setDisabledError] = useState(null);
   const [servicos, setServicos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [catFilter, setCatFilter] = useState('all');
@@ -30,7 +31,13 @@ export default function Servicos() {
         setServicos(sRes.data || []);
         setCategorias(cRes.data || []);
       })
-      .catch(() => showToast('Erro ao carregar serviços.', 'error'))
+      .catch((err) => {
+        if (err.response?.status === 403) {
+          setDisabledError(err.response.data?.detail || 'O Agendamento Online está desabilitado para este salão.');
+        } else {
+          showToast('Erro ao carregar serviços.', 'error');
+        }
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -122,6 +129,14 @@ export default function Servicos() {
         <div className="loading-center">
           <div className="spinner" />
           Carregando serviços...
+        </div>
+      ) : disabledError ? (
+        <div className="empty-state">
+          <Scissors size={40} style={{ opacity: 0.5 }} />
+          <p style={{ fontWeight: 600, color: 'var(--text-main, #333)', marginTop: 8 }}>{disabledError}</p>
+          <p style={{ fontSize: 13, color: 'var(--text-muted, #777)', marginTop: 4 }}>
+            Entre em contato diretamente com o salão para realizar seu agendamento.
+          </p>
         </div>
       ) : filtered.length === 0 ? (
         <div className="empty-state">

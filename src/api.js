@@ -4,9 +4,15 @@ const getTenant = () => {
   const urlParams = new URLSearchParams(window.location.search);
   let tenant = urlParams.get('loja');
   if (!tenant) {
+    const pathname = window.location.pathname;
+    if (pathname.startsWith('/loja=')) {
+      tenant = pathname.split('=')[1];
+    }
+  }
+  if (!tenant) {
     const hostname = window.location.hostname;
     const parts = hostname.split('.');
-    if (parts.length > 1 && parts[0] !== 'localhost' && parts[0] !== 'www' && parts[0] !== 'admin') {
+    if (parts.length > 1 && !['localhost', 'www', 'admin', 'agendamento'].includes(parts[0])) {
       tenant = parts[0];
     }
   }
