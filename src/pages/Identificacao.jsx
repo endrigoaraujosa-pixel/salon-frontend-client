@@ -23,7 +23,7 @@ function formatPhone(v) {
 
 export default function Identificacao() {
   const navigate = useNavigate();
-  const { booking, updateBooking } = useBooking();
+  const { booking, updateBooking, config } = useBooking();
   const { showToast, ToastEl } = useToast();
 
   const [nome, setNome] = useState(booking.cliente.nome);
@@ -119,7 +119,7 @@ export default function Identificacao() {
         {booking.servicos.map((s, i) => (
           <div key={i} style={{ fontSize: 14, color: 'var(--text-primary)', fontWeight: 600, display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
             <span>{s.nome}</span>
-            <span style={{ color: 'var(--text-secondary)' }}>{fmtBRL(s.valor)}</span>
+            {!config?.ocultar_valores_online && <span style={{ color: 'var(--text-secondary)' }}>{fmtBRL(s.valor)}</span>}
           </div>
         ))}
         <div style={{ borderTop: '1px solid var(--border)', marginTop: 10, paddingTop: 10, display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -134,9 +134,11 @@ export default function Identificacao() {
           <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
             ⏱ Duração estimada: {fmtMin(totalMin)}
           </div>
-          <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--brand-deep)', fontFamily: 'var(--font-display)', marginTop: 4 }}>
-            Total: {fmtBRL(totalVal)}
-          </div>
+          {!config?.ocultar_valores_online && (
+            <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--brand-deep)', fontFamily: 'var(--font-display)', marginTop: 4 }}>
+              Total: {fmtBRL(totalVal)}
+            </div>
+          )}
         </div>
       </div>
 
