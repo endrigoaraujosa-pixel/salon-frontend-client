@@ -208,6 +208,8 @@ h1, h2, h3, h4 { font-family: var(--font-display); }
   text-align: left;
   width: 100%;
   position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 .selectable-card:hover { border-color: var(--brand-muted); background: var(--brand-light); }
 .selectable-card.selected {
@@ -217,8 +219,8 @@ h1, h2, h3, h4 { font-family: var(--font-display); }
 }
 .selectable-card .check-dot {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 14px;
+  right: 14px;
   width: 22px;
   height: 22px;
   border-radius: 50%;
@@ -227,6 +229,8 @@ h1, h2, h3, h4 { font-family: var(--font-display); }
   align-items: center;
   justify-content: center;
   transition: all var(--transition);
+  z-index: 2;
+  flex-shrink: 0;
 }
 .selectable-card.selected .check-dot {
   background: var(--brand);
@@ -238,15 +242,21 @@ h1, h2, h3, h4 { font-family: var(--font-display); }
   font-weight: 700;
   font-size: 15px;
   color: var(--text-primary);
-  padding-right: 30px;
+  padding-right: 32px;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 .selectable-card .card-sub {
   font-size: 13px;
   color: var(--text-muted);
   margin-top: 4px;
+  padding-right: 32px;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 .selectable-card .card-badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   margin-top: 8px;
   font-size: 12px;
   font-weight: 700;
@@ -254,6 +264,8 @@ h1, h2, h3, h4 { font-family: var(--font-display); }
   background: var(--brand-light);
   padding: 3px 10px;
   border-radius: 99px;
+  max-width: 100%;
+  word-break: break-word;
 }
 
 /* ---- Bottom Action Bar ---- */
@@ -432,8 +444,13 @@ h1, h2, h3, h4 { font-family: var(--font-display); }
   gap: 8px;
   padding: 0 20px;
 }
+@media (max-width: 380px) {
+  .time-slots {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 .time-slot {
-  padding: 12px 8px;
+  padding: 12px 6px;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   text-align: center;
@@ -443,6 +460,10 @@ h1, h2, h3, h4 { font-family: var(--font-display); }
   color: var(--text-secondary);
   transition: all var(--transition);
   background: var(--surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
 }
 .time-slot:hover { border-color: var(--brand-muted); background: var(--brand-light); color: var(--brand-deep); }
 .time-slot.selected { background: var(--brand); border-color: var(--brand); color: white; box-shadow: 0 4px 12px rgba(132,165,157,0.35); }
