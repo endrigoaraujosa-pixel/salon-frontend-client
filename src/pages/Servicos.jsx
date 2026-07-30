@@ -96,34 +96,38 @@ export default function Servicos() {
 
       {/* Category filter */}
       {!loading && categorias.length > 0 && (
-        <div style={{ padding: '12px 20px 0', overflowX: 'auto', whiteSpace: 'nowrap', display: 'flex', gap: 8 }}>
-          <button
-            className="btn btn-sm"
-            style={{
-              borderRadius: 99,
-              border: '1.5px solid',
-              borderColor: catFilter === 'all' ? 'var(--brand)' : 'var(--border)',
-              background: catFilter === 'all' ? 'var(--brand-light)' : 'transparent',
-              color: catFilter === 'all' ? 'var(--brand-deep)' : 'var(--text-muted)',
-              fontSize: 13,
-            }}
-            onClick={() => setCatFilter('all')}
-          >Todos</button>
-          {categorias.map(c => (
+        <div className="no-scrollbar" style={{ padding: '12px 20px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
+          <div style={{ display: 'flex', gap: 8, width: 'max-content', paddingRight: 20 }}>
             <button
-              key={c.id}
               className="btn btn-sm"
               style={{
+                flexShrink: 0,
                 borderRadius: 99,
                 border: '1.5px solid',
-                borderColor: catFilter === c.id ? 'var(--brand)' : 'var(--border)',
-                background: catFilter === c.id ? 'var(--brand-light)' : 'transparent',
-                color: catFilter === c.id ? 'var(--brand-deep)' : 'var(--text-muted)',
+                borderColor: catFilter === 'all' ? 'var(--brand)' : 'var(--border)',
+                background: catFilter === 'all' ? 'var(--brand-light)' : 'transparent',
+                color: catFilter === 'all' ? 'var(--brand-deep)' : 'var(--text-muted)',
                 fontSize: 13,
               }}
-              onClick={() => setCatFilter(c.id)}
-            >{c.nome}</button>
-          ))}
+              onClick={() => setCatFilter('all')}
+            >Todos</button>
+            {categorias.map(c => (
+              <button
+                key={c.id}
+                className="btn btn-sm"
+                style={{
+                  flexShrink: 0,
+                  borderRadius: 99,
+                  border: '1.5px solid',
+                  borderColor: catFilter === c.id ? 'var(--brand)' : 'var(--border)',
+                  background: catFilter === c.id ? 'var(--brand-light)' : 'transparent',
+                  color: catFilter === c.id ? 'var(--brand-deep)' : 'var(--text-muted)',
+                  fontSize: 13,
+                }}
+                onClick={() => setCatFilter(c.id)}
+              >{c.nome}</button>
+            ))}
+          </div>
         </div>
       )}
 

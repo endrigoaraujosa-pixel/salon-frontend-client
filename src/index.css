@@ -42,10 +42,10 @@
 /* ---- Reset ---- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html {
-  font-size: 16px;
-  -webkit-text-size-adjust: 100%;
-  height: 100%;
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -58,8 +58,11 @@ body {
 
 #root {
   min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 }
 
 /* ---- Typography ---- */
@@ -67,6 +70,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); }
 
 /* ---- App Shell ---- */
 .app-shell {
+  width: 100%;
   max-width: 480px;
   margin: 0 auto;
   min-height: 100vh;
@@ -75,16 +79,21 @@ h1, h2, h3, h4 { font-family: var(--font-display); }
   background: var(--surface);
   box-shadow: var(--shadow-lg);
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 /* ---- Page Container ---- */
 .page {
   flex: 1;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   padding: 0 0 100px;
   animation: slideUp 0.35s cubic-bezier(0.4,0,0.2,1);
+  overflow-x: hidden;
 }
 
 @keyframes slideUp {
@@ -276,13 +285,19 @@ h1, h2, h3, h4 { font-family: var(--font-display); }
   transform: translateX(-50%);
   width: 100%;
   max-width: 480px;
+  box-sizing: border-box;
   background: rgba(255,255,255,0.96);
   backdrop-filter: blur(12px);
   border-top: 1.5px solid var(--border);
   padding: 16px 20px;
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
   z-index: 100;
   animation: fadeIn 0.2s ease;
 }
+
+/* ---- Scrollbar Utility ---- */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* ---- Input ---- */
 .form-group { display: flex; flex-direction: column; gap: 6px; }
