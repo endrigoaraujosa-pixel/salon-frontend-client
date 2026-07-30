@@ -64,11 +64,43 @@ export default function DataHora() {
   const handleNext = () => {
     if (!selectedDate) { showToast('Selecione uma data.', 'error'); return; }
     if (!selectedHora) { showToast('Selecione um horário.', 'error'); return; }
-    updateBooking({
-      data: format(selectedDate, 'yyyy-MM-dd'),
-      hora: selectedHora,
-    });
-    navigate('/identificacao');
+
+    const dateStr = format(selectedDate, 'yyyy-MM-dd');
+    const dataHora = `${dateStr}T${selectedHora}:00`;
+
+    // Faz a reserva temporária no backend
+    api.post('/online/reservar', {
+      data_hora: dataHora,
+      servicos: booking.servicos.map(s => s.id),
+      profissional_id: booking.profissional?.id || null
+    })
+      .then(r => {
+        const { solicitacaoId } = r.data;
+        updateBooking({
+          data: dateStr,
+          hora: selectedHora,
+          solicitacaoId
+        });
+        navigate('/identificacao');
+      })
+      .catch((err) => {
+        const msg = err.response?.data?.detail || 'Erro ao reservar horário. Tente outro horário.';
+        showToast(msg, 'error');
+        // Recarregar os slots daquela data para atualizar a tela
+        setSelectedHora(null);
+        setSlots([]);
+        setLoadingSlots(true);
+        const servicoIds = booking.servicos.map(s => s.id);
+        const params = new URLSearchParams();
+        params.append('data', dateStr);
+        servicoIds.forEach(id => params.append('servicos', id));
+        if (booking.profissional?.id) params.append('profissional_id', booking.profissional.id);
+
+        api.get(`/online/disponibilidade?${params.toString()}`)
+          .then(res => setSlots(res.data?.horarios || []))
+          .catch(() => {})
+          .finally(() => setLoadingSlots(false));
+      });
   };
 
   const totalMin = booking.servicos.reduce((a, s) => a + (s.duracao_minutos || 0), 0);

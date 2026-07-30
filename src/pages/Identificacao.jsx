@@ -5,6 +5,7 @@ import { useBooking } from '../BookingContext';
 import { useToast } from '../useToast';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import api from '../api';
 
 const STEPS = 4;
 
@@ -29,6 +30,11 @@ export default function Identificacao() {
   const [telefone, setTelefone] = useState(booking.cliente.telefone);
   const [obs, setObs] = useState(booking.observacoes || '');
 
+  const [showOtpInput, setShowOtpInput] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
+  const [loadingOtp, setLoadingOtp] = useState(false);
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
+
   if (booking.servicos.length === 0) {
     navigate('/servicos');
     return null;
@@ -46,8 +52,43 @@ export default function Identificacao() {
     const phoneDigits = telefone.replace(/\D/g, '');
     if (phoneDigits.length < 10) { showToast('Informe um telefone válido com DDD.', 'error'); return; }
 
-    updateBooking({ cliente: { nome: nome.trim(), telefone }, observacoes: obs });
-    navigate('/sucesso');
+    if (!showOtpInput) {
+      setLoadingOtp(true);
+      api.post('/online/auth/request-code', { telefone })
+        .then(res => {
+          if (res.data.requiresVerification) {
+            setShowOtpInput(true);
+            showToast('Enviamos um código de verificação para o seu WhatsApp!', 'success');
+          } else {
+            // Se a loja não tem o WhatsApp ativo, prossegue direto
+            updateBooking({ cliente: { nome: nome.trim(), telefone }, observacoes: obs });
+            navigate('/sucesso');
+          }
+        })
+        .catch(err => {
+          const msg = err.response?.data?.detail || 'Erro ao enviar código de verificação. Tente novamente.';
+          showToast(msg, 'error');
+        })
+        .finally(() => {
+          setLoadingOtp(false);
+        });
+    } else {
+      if (otpCode.trim().length < 6) { showToast('Informe o código de verificação recebido (6 dígitos).', 'error'); return; }
+      setVerifyingOtp(true);
+      api.post('/online/auth/validate-code', { telefone, codigo_otp: otpCode.trim() })
+        .then(() => {
+          showToast('WhatsApp validado com sucesso!', 'success');
+          updateBooking({ cliente: { nome: nome.trim(), telefone }, observacoes: obs });
+          navigate('/sucesso');
+        })
+        .catch(err => {
+          const msg = err.response?.data?.detail || 'Código de validação incorreto ou expirado. Tente novamente.';
+          showToast(msg, 'error');
+        })
+        .finally(() => {
+          setVerifyingOtp(false);
+        });
+    }
   };
 
   return (
@@ -112,6 +153,7 @@ export default function Identificacao() {
             value={nome}
             onChange={e => setNome(e.target.value)}
             autoComplete="name"
+            disabled={showOtpInput || loadingOtp || verifyingOtp}
           />
         </div>
 
@@ -127,28 +169,78 @@ export default function Identificacao() {
             onChange={e => setTelefone(formatPhone(e.target.value))}
             inputMode="tel"
             autoComplete="tel"
+            disabled={showOtpInput || loadingOtp || verifyingOtp}
           />
         </div>
 
-        <div className="form-group">
-          <label className="form-label">
-            <MessageSquare size={13} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }} />
-            Observações (opcional)
-          </label>
-          <textarea
-            className="form-input"
-            placeholder="Alguma preferência ou informação importante..."
-            rows={3}
-            value={obs}
-            onChange={e => setObs(e.target.value)}
-            style={{ resize: 'none' }}
-          />
-        </div>
+        {showOtpInput && (
+          <div className="form-group" style={{ animation: 'fadeIn 0.3s ease-in-out' }}>
+            <label className="form-label" style={{ color: 'var(--brand-deep)', fontWeight: 700 }}>
+              🔑 Código de Verificação *
+            </label>
+            <input
+              className="form-input"
+              placeholder="Digite o código de 6 dígitos"
+              value={otpCode}
+              onChange={e => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              inputMode="numeric"
+              maxLength={6}
+              disabled={verifyingOtp}
+              style={{ letterSpacing: '0.2em', textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}
+            />
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
+              <button 
+                type="button" 
+                onClick={() => { setShowOtpInput(false); setOtpCode(''); }}
+                style={{ fontSize: 12, background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', textDecoration: 'underline' }}
+                disabled={verifyingOtp}
+              >
+                Alterar telefone
+              </button>
+              <button 
+                type="button" 
+                onClick={() => {
+                  setLoadingOtp(true);
+                  api.post('/online/auth/request-code', { telefone })
+                    .then(() => showToast('Código reenviado com sucesso!', 'success'))
+                    .catch(err => showToast(err.response?.data?.detail || 'Erro ao reenviar código.', 'error'))
+                    .finally(() => setLoadingOtp(false));
+                }}
+                style={{ fontSize: 12, background: 'none', border: 'none', color: 'var(--brand-deep)', cursor: 'pointer', fontWeight: 600 }}
+                disabled={loadingOtp || verifyingOtp}
+              >
+                {loadingOtp ? 'Reenviando...' : 'Reenviar código'}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {!showOtpInput && (
+          <div className="form-group">
+            <label className="form-label">
+              <MessageSquare size={13} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }} />
+              Observações (opcional)
+            </label>
+            <textarea
+              className="form-input"
+              placeholder="Alguma preferência ou informação importante..."
+              rows={3}
+              value={obs}
+              onChange={e => setObs(e.target.value)}
+              style={{ resize: 'none' }}
+            />
+          </div>
+        )}
       </div>
 
       <div className="bottom-bar">
-        <button className="btn btn-primary btn-full btn-lg" onClick={handleNext}>
-          Confirmar Pedido <ChevronRight size={18} />
+        <button 
+          className="btn btn-primary btn-full btn-lg" 
+          onClick={handleNext}
+          disabled={loadingOtp || verifyingOtp}
+        >
+          {loadingOtp ? 'Enviando código...' : (verifyingOtp ? 'Validando...' : (showOtpInput ? 'Validar Código' : 'Confirmar Pedido'))}
+          {!loadingOtp && !verifyingOtp && <ChevronRight size={18} />}
         </button>
       </div>
     </div>

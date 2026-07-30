@@ -9,6 +9,7 @@ export function BookingProvider({ children }) {
     data: null,         // 'YYYY-MM-DD'
     hora: null,         // 'HH:MM'
     cliente: { nome: '', telefone: '' },
+    solicitacaoId: null,
   });
 
   const updateBooking = (patch) => setBooking(prev => ({ ...prev, ...patch }));
@@ -16,6 +17,7 @@ export function BookingProvider({ children }) {
   const resetBooking = () => setBooking({
     servicos: [], profissional: null, data: null, hora: null,
     cliente: { nome: '', telefone: '' },
+    solicitacaoId: null,
   });
 
   return (
