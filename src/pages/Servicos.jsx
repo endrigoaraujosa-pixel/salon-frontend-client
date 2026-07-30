@@ -12,7 +12,7 @@ const STEPS = 4;
 
 export default function Servicos() {
   const navigate = useNavigate();
-  const { booking, updateBooking } = useBooking();
+  const { booking, updateBooking, config, updateConfig } = useBooking();
   const { showToast, ToastEl } = useToast();
 
   const [loading, setLoading] = useState(true);
@@ -26,10 +26,12 @@ export default function Servicos() {
     Promise.all([
       api.get('/online/servicos'),
       api.get('/online/categorias'),
+      api.get('/online/config').catch(() => ({ data: {} })),
     ])
-      .then(([sRes, cRes]) => {
+      .then(([sRes, cRes, cfgRes]) => {
         setServicos(sRes.data || []);
         setCategorias(cRes.data || []);
+        if (cfgRes.data) updateConfig(cfgRes.data);
       })
       .catch((err) => {
         if (err.response?.status === 403) {
@@ -165,9 +167,11 @@ export default function Servicos() {
                     <Clock size={11} style={{ display: 'inline', marginRight: 3, verticalAlign: 'middle' }} />
                     {fmtMin(s.duracao_minutos)}
                   </span>
-                  <span className="card-badge" style={{ background: 'white', border: '1px solid var(--border)' }}>
-                    {fmtBRL(s.valor)}
-                  </span>
+                  {!config?.ocultar_valores_online && (
+                    <span className="card-badge" style={{ background: 'white', border: '1px solid var(--border)' }}>
+                      {fmtBRL(s.valor)}
+                    </span>
+                  )}
                 </div>
               </button>
             );
@@ -197,9 +201,11 @@ export default function Servicos() {
             <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
               {selected.length} serviço(s) · {fmtMin(totalMin)}
             </div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--brand-deep)', fontFamily: 'var(--font-display)' }}>
-              {fmtBRL(totalVal)}
-            </div>
+            {!config?.ocultar_valores_online && (
+              <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--brand-deep)', fontFamily: 'var(--font-display)' }}>
+                {fmtBRL(totalVal)}
+              </div>
+            )}
           </div>
         )}
         <button

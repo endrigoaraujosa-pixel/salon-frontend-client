@@ -74,7 +74,7 @@ export default function Profissional() {
               <div className="prof-avatar" style={{ background: 'var(--surface-2)' }}>
                 <User size={20} color="var(--text-muted)" />
               </div>
-              <div>
+              <div style={{ minWidth: 0, flex: 1 }}>
                 <div className="card-title">Qualquer profissional</div>
                 <div className="card-sub">Primeiro disponível no horário escolhido</div>
               </div>
@@ -103,7 +103,7 @@ export default function Profissional() {
                   <div className="prof-avatar">
                     {p.foto ? <img src={p.foto} alt={p.nome} /> : initials}
                   </div>
-                  <div>
+                  <div style={{ minWidth: 0, flex: 1 }}>
                     <div className="card-title">{p.nome}</div>
                     {p.cargo && <div className="card-sub">{p.cargo}</div>}
                   </div>

@@ -11,8 +11,10 @@ export function BookingProvider({ children }) {
     cliente: { nome: '', telefone: '' },
     solicitacaoId: null,
   });
+  const [config, setConfig] = useState({ ocultar_valores_online: false });
 
   const updateBooking = (patch) => setBooking(prev => ({ ...prev, ...patch }));
+  const updateConfig = (patch) => setConfig(prev => ({ ...prev, ...patch }));
 
   const resetBooking = () => setBooking({
     servicos: [], profissional: null, data: null, hora: null,
@@ -21,7 +23,7 @@ export function BookingProvider({ children }) {
   });
 
   return (
-    <BookingContext.Provider value={{ booking, updateBooking, resetBooking }}>
+    <BookingContext.Provider value={{ booking, updateBooking, resetBooking, config, updateConfig }}>
       {children}
     </BookingContext.Provider>
   );
