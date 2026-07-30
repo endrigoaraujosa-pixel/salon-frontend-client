@@ -43,6 +43,7 @@ export default function Sucesso() {
         })),
         profissional_id: booking.profissional?.id || null,
         observacoes: booking.observacoes || '',
+        solicitacaoId: booking.solicitacaoId || null,
       };
 
       await api.post('/online/solicitar', payload);

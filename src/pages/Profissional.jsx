@@ -21,7 +21,9 @@ export default function Profissional() {
       navigate('/servicos');
       return;
     }
-    api.get('/online/profissionais')
+    // Enviar IDs dos serviços selecionados para filtrar profissionais habilitados
+    const servicoIds = booking.servicos.map(s => s.id).join(',');
+    api.get('/online/profissionais', { params: { servicos: servicoIds } })
       .then(r => setProfissionais(r.data || []))
       .catch(() => showToast('Erro ao carregar profissionais.', 'error'))
       .finally(() => setLoading(false));

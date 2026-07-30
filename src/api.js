@@ -1,7 +1,20 @@
 import axios from 'axios';
 
-const tenant = new URLSearchParams(window.location.search).get('loja');
-console.log(tenant);
+const getTenant = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  let tenant = urlParams.get('loja');
+  if (!tenant) {
+    const hostname = window.location.hostname;
+    const parts = hostname.split('.');
+    if (parts.length > 1 && parts[0] !== 'localhost' && parts[0] !== 'www' && parts[0] !== 'admin') {
+      tenant = parts[0];
+    }
+  }
+  return tenant;
+};
+
+const tenant = getTenant();
+console.log('Tenant ativo:', tenant);
 
 const getBaseURL = () => {
   if (import.meta.env.VITE_API_URL) {
