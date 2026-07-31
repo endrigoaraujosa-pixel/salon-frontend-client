@@ -9,7 +9,7 @@ const STEPS = 4;
 
 export default function Profissional() {
   const navigate = useNavigate();
-  const { booking, updateBooking } = useBooking();
+  const { booking, updateBooking, config } = useBooking();
   const { showToast, ToastEl } = useToast();
 
   const [loading, setLoading] = useState(true);
@@ -50,7 +50,12 @@ export default function Profissional() {
       </div>
 
       <div className="page-header" style={{ marginTop: 12 }}>
-        <span className="label">Passo 2 de 4</span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span className="label">Passo 2 de 4</span>
+          {config?.logomarca && (
+            <img src={config.logomarca} alt={config?.nome_fantasia || "Logo"} style={{ height: 26, maxHeight: 30, objectFit: 'contain', borderRadius: 4 }} />
+          )}
+        </div>
         <h1>Profissional</h1>
         <p>Escolha quem vai te atender, ou deixe em branco para qualquer profissional disponível.</p>
       </div>

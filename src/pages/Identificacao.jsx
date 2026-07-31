@@ -106,7 +106,12 @@ export default function Identificacao() {
       </div>
 
       <div className="page-header" style={{ marginTop: 12 }}>
-        <span className="label">Passo 4 de 4</span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span className="label">Passo 4 de 4</span>
+          {config?.logomarca && (
+            <img src={config.logomarca} alt={config?.nome_fantasia || "Logo"} style={{ height: 26, maxHeight: 30, objectFit: 'contain', borderRadius: 4 }} />
+          )}
+        </div>
         <h1>Seus Dados</h1>
         <p>Precisamos de algumas informações para confirmar seu agendamento.</p>
       </div>
