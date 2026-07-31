@@ -16,9 +16,9 @@ function formatPhone(v) {
   if (!v) return '';
   const d = v.replace(/\D/g, '').slice(0, 11);
   if (d.length <= 2) return d;
-  if (d.length <= 6) return `(${d.slice(0,2)}) ${d.slice(2)}`;
-  if (d.length <= 10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;
-  return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
+  if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+  if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+  return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
 }
 
 export default function Identificacao() {
@@ -191,16 +191,16 @@ export default function Identificacao() {
               style={{ letterSpacing: '0.2em', textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}
             />
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={() => { setShowOtpInput(false); setOtpCode(''); }}
                 style={{ fontSize: 12, background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', textDecoration: 'underline' }}
                 disabled={verifyingOtp}
               >
                 Alterar telefone
               </button>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={() => {
                   setLoadingOtp(true);
                   api.post('/online/auth/request-code', { telefone })
@@ -219,16 +219,22 @@ export default function Identificacao() {
 
         {!showOtpInput && (
           <div className="form-group">
-            <label className="form-label">
-              <MessageSquare size={13} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }} />
-              Observações (opcional)
-            </label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+              <label className="form-label" style={{ marginBottom: 0 }}>
+                <MessageSquare size={13} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }} />
+                Observações (opcional)
+              </label>
+              <span style={{ fontSize: 11, color: obs.length >= 130 ? '#ef4444' : '#94a3b8', fontWeight: 500 }}>
+                {obs.length}/130
+              </span>
+            </div>
             <textarea
               className="form-input"
               placeholder="Alguma preferência ou informação importante..."
               rows={3}
+              maxLength={130}
               value={obs}
-              onChange={e => setObs(e.target.value)}
+              onChange={e => setObs(e.target.value.slice(0, 130))}
               style={{ resize: 'none' }}
             />
           </div>
@@ -236,8 +242,8 @@ export default function Identificacao() {
       </div>
 
       <div className="bottom-bar">
-        <button 
-          className="btn btn-primary btn-full btn-lg" 
+        <button
+          className="btn btn-primary btn-full btn-lg"
           onClick={handleNext}
           disabled={loadingOtp || verifyingOtp}
         >

@@ -35,7 +35,8 @@ export default function Servicos() {
       })
       .catch((err) => {
         if (err.response?.status === 403) {
-          setDisabledError(err.response.data?.detail || 'O Agendamento Online está desabilitado para este salão.');
+          const nomeEmp = config?.nome_fantasia?.trim();
+          setDisabledError(err.response.data?.detail || (nomeEmp ? `O Agendamento Online está desabilitado para ${nomeEmp}.` : 'O Agendamento Online está desabilitado para este salão.'));
         } else {
           showToast('Erro ao carregar serviços.', 'error');
         }
@@ -141,7 +142,7 @@ export default function Servicos() {
           <Scissors size={40} style={{ opacity: 0.5 }} />
           <p style={{ fontWeight: 600, color: 'var(--text-main, #333)', marginTop: 8 }}>{disabledError}</p>
           <p style={{ fontSize: 13, color: 'var(--text-muted, #777)', marginTop: 4 }}>
-            Entre em contato diretamente com o salão para realizar seu agendamento.
+            Entre em contato diretamente com {config?.nome_fantasia?.trim() || 'o salão'} para realizar seu agendamento.
           </p>
         </div>
       ) : filtered.length === 0 ? (
