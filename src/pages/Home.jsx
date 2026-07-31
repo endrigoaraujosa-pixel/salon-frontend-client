@@ -11,7 +11,11 @@ export default function Home() {
     <div className="page" style={{ paddingBottom: 0 }}>
       <div className="home-hero">
         <div className="home-logo">
-          <Scissors size={36} color="#6F9189" strokeWidth={2} />
+          {config?.logomarca ? (
+            <img src={config.logomarca} alt={nomeEmpresa || "Logo da Empresa"} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          ) : (
+            <Scissors size={36} color="#6F9189" strokeWidth={2} />
+          )}
         </div>
 
         <div>

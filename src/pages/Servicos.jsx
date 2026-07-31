@@ -90,7 +90,12 @@ export default function Servicos() {
       </div>
 
       <div className="page-header" style={{ marginTop: 12 }}>
-        <span className="label">Passo 1 de 4</span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span className="label">Passo 1 de 4</span>
+          {config?.logomarca && (
+            <img src={config.logomarca} alt={config?.nome_fantasia || "Logo"} style={{ height: 26, maxHeight: 30, objectFit: 'contain', borderRadius: 4 }} />
+          )}
+        </div>
         <h1>Serviços</h1>
         <p>Selecione o(s) serviço(s) que deseja agendar.</p>
       </div>

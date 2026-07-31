@@ -12,7 +12,7 @@ const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
 export default function DataHora() {
   const navigate = useNavigate();
-  const { booking, updateBooking } = useBooking();
+  const { booking, updateBooking, config } = useBooking();
   const { showToast, ToastEl } = useToast();
 
   const [monthCursor, setMonthCursor] = useState(new Date());
@@ -121,7 +121,12 @@ export default function DataHora() {
       </div>
 
       <div className="page-header" style={{ marginTop: 12 }}>
-        <span className="label">Passo 3 de 4</span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span className="label">Passo 3 de 4</span>
+          {config?.logomarca && (
+            <img src={config.logomarca} alt={config?.nome_fantasia || "Logo"} style={{ height: 26, maxHeight: 30, objectFit: 'contain', borderRadius: 4 }} />
+          )}
+        </div>
         <h1>Data e Horário</h1>
         <p>
           {booking.servicos.length} serviço(s) · Duração estimada: <strong>{fmtMin(totalMin)}</strong>

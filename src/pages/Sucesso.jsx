@@ -8,12 +8,20 @@ import { ptBR } from 'date-fns/locale';
 
 export default function Sucesso() {
   const navigate = useNavigate();
-  const { booking, resetBooking, config } = useBooking();
+  const { booking, resetBooking, config, updateConfig } = useBooking();
   const [status, setStatus] = useState('loading'); // loading | success | error
   const [errorMsg, setErrorMsg] = useState('');
 
   const [confirmedBooking, setConfirmedBooking] = useState(null);
   const submittedRef = useRef(false);
+
+  useEffect(() => {
+    api.get('/online/config')
+      .then(res => {
+        if (res.data) updateConfig(res.data);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (submittedRef.current) return;
@@ -99,11 +107,18 @@ export default function Sucesso() {
     ? format(new Date((activeBooking.data || new Date().toISOString().slice(0,10)) + 'T12:00:00'), "EEEE, dd 'de' MMMM", { locale: ptBR })
     : '';
 
+  const nomeEmpresa = config?.nome_fantasia?.trim();
+
   return (
     <div className="page" style={{ alignItems: 'center', justifyContent: 'flex-start', padding: '40px 24px 100px', gap: 0 }}>
 
       {/* Success icon with animation */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, width: '100%', textAlign: 'center', animation: 'slideUp 0.5s ease' }}>
+        {config?.logomarca && (
+          <div style={{ height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 4 }}>
+            <img src={config.logomarca} alt={nomeEmpresa || "Logo"} style={{ maxHeight: '100%', maxWidth: 180, objectFit: 'contain' }} />
+          </div>
+        )}
         <div className="success-icon" style={{ width: 96, height: 96 }}>
           <CheckCircle2 size={52} strokeWidth={1.5} />
         </div>
@@ -112,7 +127,7 @@ export default function Sucesso() {
             Pedido Enviado!
           </h1>
           <p style={{ fontSize: 15, color: 'var(--text-secondary)', marginTop: 8, lineHeight: 1.5 }}>
-            Sua solicitação foi recebida com sucesso. Em breve, {config?.nome_fantasia?.trim() || 'o salão'} confirmará seu agendamento.
+            Sua solicitação foi recebida com sucesso. Em breve, {nomeEmpresa ? nomeEmpresa : 'o salão'} confirmará seu agendamento.
           </p>
         </div>
       </div>
@@ -167,7 +182,7 @@ export default function Sucesso() {
         color: '#92400E',
         lineHeight: 1.5,
       }}>
-        ⏳ <strong>Aguardando aprovação:</strong> {config?.nome_fantasia?.trim() || 'O salão'} analisará sua solicitação e entrará em contato pelo telefone <strong>{activeBooking.cliente?.telefone || ''}</strong> para confirmar.
+        ⏳ <strong>Aguardando aprovação:</strong> {nomeEmpresa ? nomeEmpresa : 'O salão'} analisará sua solicitação e entrará em contato pelo telefone <strong>{activeBooking.cliente?.telefone || ''}</strong> para confirmar.
       </div>
 
       {/* CTA */}
