@@ -8,7 +8,7 @@ import { ptBR } from 'date-fns/locale';
 
 export default function Sucesso() {
   const navigate = useNavigate();
-  const { booking, resetBooking } = useBooking();
+  const { booking, resetBooking, config } = useBooking();
   const [status, setStatus] = useState('loading'); // loading | success | error
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -112,7 +112,7 @@ export default function Sucesso() {
             Pedido Enviado!
           </h1>
           <p style={{ fontSize: 15, color: 'var(--text-secondary)', marginTop: 8, lineHeight: 1.5 }}>
-            Sua solicitação foi recebida com sucesso. Em breve, o salão confirmará seu agendamento.
+            Sua solicitação foi recebida com sucesso. Em breve, {config?.nome_fantasia?.trim() || 'o salão'} confirmará seu agendamento.
           </p>
         </div>
       </div>
@@ -167,7 +167,7 @@ export default function Sucesso() {
         color: '#92400E',
         lineHeight: 1.5,
       }}>
-        ⏳ <strong>Aguardando aprovação:</strong> O salão analisará sua solicitação e entrará em contato pelo telefone <strong>{activeBooking.cliente?.telefone || ''}</strong> para confirmar.
+        ⏳ <strong>Aguardando aprovação:</strong> {config?.nome_fantasia?.trim() || 'O salão'} analisará sua solicitação e entrará em contato pelo telefone <strong>{activeBooking.cliente?.telefone || ''}</strong> para confirmar.
       </div>
 
       {/* CTA */}

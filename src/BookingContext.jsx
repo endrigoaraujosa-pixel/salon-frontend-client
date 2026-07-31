@@ -1,4 +1,5 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import api from './api';
 
 const BookingContext = createContext(null);
 
@@ -11,10 +12,18 @@ export function BookingProvider({ children }) {
     cliente: { nome: '', telefone: '' },
     solicitacaoId: null,
   });
-  const [config, setConfig] = useState({ ocultar_valores_online: false });
+  const [config, setConfig] = useState({ ocultar_valores_online: false, nome_fantasia: '' });
 
   const updateBooking = (patch) => setBooking(prev => ({ ...prev, ...patch }));
   const updateConfig = (patch) => setConfig(prev => ({ ...prev, ...patch }));
+
+  useEffect(() => {
+    api.get('/online/config')
+      .then(res => {
+        if (res.data) updateConfig(res.data);
+      })
+      .catch(() => {});
+  }, []);
 
   const resetBooking = () => setBooking({
     servicos: [], profissional: null, data: null, hora: null,
