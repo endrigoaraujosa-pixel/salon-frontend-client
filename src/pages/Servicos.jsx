@@ -44,15 +44,26 @@ export default function Servicos() {
       .finally(() => setLoading(false));
   }, []);
 
+  const maxServicos = config?.max_servicos_agendamento_online;
+
   const toggle = (s) => {
-    setSelected(prev =>
-      prev.includes(s.id) ? prev.filter(id => id !== s.id) : [...prev, s.id]
-    );
+    setSelected(prev => {
+      const isSelected = prev.includes(s.id);
+      if (!isSelected && maxServicos && Number(maxServicos) > 0 && prev.length >= Number(maxServicos)) {
+        showToast(`Você pode selecionar no máximo ${maxServicos} serviço(s).`, 'error');
+        return prev;
+      }
+      return isSelected ? prev.filter(id => id !== s.id) : [...prev, s.id];
+    });
   };
 
   const handleNext = () => {
     if (selected.length === 0) {
       showToast('Selecione pelo menos um serviço.', 'error');
+      return;
+    }
+    if (maxServicos && Number(maxServicos) > 0 && selected.length > Number(maxServicos)) {
+      showToast(`Você pode selecionar no máximo ${maxServicos} serviço(s).`, 'error');
       return;
     }
     const selectedServicos = servicos.filter(s => selected.includes(s.id));
@@ -97,7 +108,11 @@ export default function Servicos() {
           )}
         </div>
         <h1>Serviços</h1>
-        <p>Selecione o(s) serviço(s) que deseja agendar.</p>
+        <p>
+          {maxServicos && Number(maxServicos) > 0
+            ? `Selecione até ${maxServicos} serviço(s) para o seu agendamento.`
+            : 'Selecione o(s) serviço(s) que deseja agendar.'}
+        </p>
       </div>
 
       {/* Category filter */}
