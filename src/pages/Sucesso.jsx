@@ -123,8 +123,8 @@ export default function Sucesso() {
           <CheckCircle2 size={52} strokeWidth={1.5} />
         </div>
         <div>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.1 }}>
-            Pedido Enviado!
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.2 }}>
+            Solicitação de Agendamento Enviada!
           </h1>
           <p style={{ fontSize: 15, color: 'var(--text-secondary)', marginTop: 8, lineHeight: 1.5 }}>
             Sua solicitação foi recebida com sucesso. Em breve, {nomeEmpresa ? nomeEmpresa : 'o salão'} confirmará seu agendamento.
@@ -145,7 +145,7 @@ export default function Sucesso() {
         gap: 0,
       }}>
         <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 12 }}>
-          Detalhes do Pedido
+          Detalhes do Agendamento
         </div>
 
         <div className="summary-row">
