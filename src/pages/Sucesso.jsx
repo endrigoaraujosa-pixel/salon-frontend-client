@@ -13,6 +13,7 @@ export default function Sucesso() {
   const [errorMsg, setErrorMsg] = useState('');
 
   const [confirmedBooking, setConfirmedBooking] = useState(null);
+  const [autoConfirmado, setAutoConfirmado] = useState(false);
   const submittedRef = useRef(false);
 
   useEffect(() => {
@@ -54,7 +55,10 @@ export default function Sucesso() {
         solicitacaoId: booking.solicitacaoId || null,
       };
 
-      await api.post('/online/solicitar', payload);
+      const res = await api.post('/online/solicitar', payload);
+      if (res.data?.autoConfirmado) {
+        setAutoConfirmado(true);
+      }
       setConfirmedBooking(booking);
       setStatus('success');
       resetBooking();
@@ -124,10 +128,12 @@ export default function Sucesso() {
         </div>
         <div>
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.2 }}>
-            Solicitação de Agendamento Enviada!
+            {autoConfirmado ? 'Agendamento Confirmado!' : 'Solicitação de Agendamento Enviada!'}
           </h1>
           <p style={{ fontSize: 15, color: 'var(--text-secondary)', marginTop: 8, lineHeight: 1.5 }}>
-            Sua solicitação foi recebida com sucesso. Em breve, {nomeEmpresa ? nomeEmpresa : 'o salão'} confirmará seu agendamento.
+            {autoConfirmado 
+              ? `Seu agendamento foi realizado e confirmado com sucesso em ${nomeEmpresa ? nomeEmpresa : 'nosso salão'}.`
+              : `Sua solicitação foi recebida com sucesso. Em breve, ${nomeEmpresa ? nomeEmpresa : 'o salão'} confirmará seu agendamento.`}
           </p>
         </div>
       </div>
