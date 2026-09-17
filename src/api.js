@@ -40,4 +40,25 @@ const api = axios.create({
   },
 });
 
+// Proofs stay in this tab's memory, just like BookingContext. No extra UI step.
+let phoneToken;
+const reservationTokens = new Map();
+api.interceptors.request.use(config => {
+  if (config.method === 'post' && config.url?.startsWith('/online/')) {
+    config.data = { ...config.data,
+      online_token: phoneToken,
+      reservation_token: reservationTokens.get(config.data?.solicitacaoId),
+    };
+  }
+  return config;
+});
+api.interceptors.response.use(response => {
+  if (response.data?.online_token) phoneToken = response.data.online_token;
+  if (response.data?.reservation_token && response.data?.solicitacaoId) {
+    reservationTokens.set(response.data.solicitacaoId, response.data.reservation_token);
+    if (reservationTokens.size > 10) reservationTokens.delete(reservationTokens.keys().next().value);
+  }
+  return response;
+});
+
 export default api;
