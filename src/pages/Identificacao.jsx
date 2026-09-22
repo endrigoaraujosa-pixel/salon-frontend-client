@@ -6,6 +6,7 @@ import { useToast } from '../useToast';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import api from '../api';
+import { normalizarNomeCliente, nomeClienteCompleto } from '../utils/nomeClienteOnline';
 
 const STEPS = 4;
 
@@ -48,7 +49,8 @@ export default function Identificacao() {
     : '';
 
   const handleNext = () => {
-    if (!nome.trim()) { showToast('Informe seu nome.', 'error'); return; }
+    const nomeCompleto = normalizarNomeCliente(nome);
+    if (!nomeClienteCompleto(nomeCompleto)) { showToast('Informe seu nome e sobrenome.', 'error'); return; }
     const phoneDigits = telefone.replace(/\D/g, '');
     if (phoneDigits.length < 10) { showToast('Informe um telefone válido com DDD.', 'error'); return; }
 
@@ -61,7 +63,7 @@ export default function Identificacao() {
             showToast('Enviamos um código de verificação para o seu WhatsApp!', 'success');
           } else {
             // Se a loja não tem o WhatsApp ativo, prossegue direto
-            updateBooking({ cliente: { nome: nome.trim(), telefone }, observacoes: obs });
+            updateBooking({ cliente: { nome: nomeCompleto, telefone }, observacoes: obs });
             navigate('/sucesso');
           }
         })
@@ -78,7 +80,7 @@ export default function Identificacao() {
       api.post('/online/auth/validate-code', { telefone, codigo_otp: otpCode.trim() })
         .then(() => {
           showToast('WhatsApp validado com sucesso!', 'success');
-          updateBooking({ cliente: { nome: nome.trim(), telefone }, observacoes: obs });
+          updateBooking({ cliente: { nome: nomeCompleto, telefone }, observacoes: obs });
           navigate('/sucesso');
         })
         .catch(err => {
@@ -152,11 +154,12 @@ export default function Identificacao() {
         <div className="form-group">
           <label className="form-label">
             <User size={13} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }} />
-            Seu nome completo *
+            Nome e sobrenome *
           </label>
           <input
             className="form-input"
-            placeholder="Como devemos te chamar?"
+            placeholder="Ex.: Maria Silva"
+            maxLength={255}
             value={nome}
             onChange={e => setNome(e.target.value)}
             autoComplete="name"
