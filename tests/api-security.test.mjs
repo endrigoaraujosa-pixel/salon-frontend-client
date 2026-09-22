@@ -2,16 +2,18 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
+import { prepareBookingLocation } from '../src/pwaTenant.js';
 const source = (await readFile(new URL('../src/api.js', import.meta.url), 'utf8'))
   .replace("import axios from 'axios';", '')
+  .replace("import { prepareBookingLocation } from './pwaTenant';", '')
   .replaceAll('import.meta.env.VITE_API_URL', "'https://api.example.invalid'")
   .replace('export default api;', '');
 function client(tenant) {
   const hooks = {};
   const api = { interceptors: { request: { use(fn) { hooks.request = fn; } }, response: { use(fn) { hooks.response = fn; } } } };
   vm.runInNewContext(source, {
-    axios: { create: () => api }, console: { log() {} }, URLSearchParams,
-    window: { location: { search: `?loja=${tenant}`, pathname: '/', hostname: 'agendamento.example.invalid' } }
+    axios: { create: () => api }, console: { log() {} }, URLSearchParams, prepareBookingLocation,
+    window: { location: new URL(`https://agendamento.example.invalid/?loja=${tenant}`), history: { replaceState() {} } }
   });
   return hooks;
 }
