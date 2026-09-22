@@ -1,4 +1,5 @@
 import './index.css';
+import { bookingBasePath } from './pwaTenant';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { BookingProvider } from './BookingContext';
 import Home from './pages/Home';
@@ -12,7 +13,7 @@ function App() {
   return (
     <BookingProvider>
       <div className="app-shell">
-        <BrowserRouter>
+        <BrowserRouter basename={bookingBasePath(window.location)}>
           <Routes>
             <Route path="/"              element={<Home />} />
             <Route path="/servicos"      element={<Servicos />} />

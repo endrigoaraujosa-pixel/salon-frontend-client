@@ -5,7 +5,10 @@ export function bookingManifestPlugin() {
     if (url.pathname !== '/manifest.json') return next();
     const manifest = JSON.parse(readFileSync(new URL('./public/manifest.json', import.meta.url), 'utf8'));
     const tenant = url.searchParams.get('loja') || '';
-    if (/^[a-zA-Z0-9_-]{1,63}$/.test(tenant)) manifest.id = manifest.start_url = `/?loja=${tenant}`;
+    if (/^[a-zA-Z0-9_-]{1,63}$/.test(tenant)) {
+      manifest.id = `/?loja=${tenant}`;
+      manifest.start_url = `/loja=${tenant}/`;
+    }
     res.setHeader('Content-Type', 'application/manifest+json');
     res.setHeader('Cache-Control', 'no-store');
     res.end(JSON.stringify(manifest));
